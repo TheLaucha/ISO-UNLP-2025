@@ -1,0 +1,58 @@
+# Ignorar carpeta 00_old completa
+00_old/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.tar.bz2
+
+# Archivos de imagen grandes
+*.iso
+*.img
+*.vmdk
+*.vdi
+*.vhd
+
+# Archivos de documentos temporales
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
+# Logs
+*.log
+
+# Archivos de configuración local
+.env
+.env.local
+config.local
+
+# Archivos de Anki (si no quieres versionarlos)
+*.apkg
+
+# Archivos de Vagrant
+# Vagrantfile - NO ignorar (contiene configuración importante)
+.vagrant/
+
+# Archivos de máquinas virtuales
+*.vbox
+*.ova
+*.ovf
