@@ -1,0 +1,52 @@
+Vagrant.configure("2") do |config|
+  # Box base
+  config.vm.box = "debian/bookworm64"
+
+  # Definir ruta del disco extra
+  disk_path = File.expand_path("extra_disk.vdi", File.dirname(__FILE__))
+
+  # Configuración de VirtualBox
+  config.vm.provider "virtualbox" do |vb|
+    vb.name   = "ISO-Practica2"
+    vb.memory = "2048"
+    vb.cpus   = 2
+
+    # Crear disco extra solo si no existe
+    unless File.exist?(disk_path)
+      vb.customize ["createhd", "--filename", disk_path, "--size", 20480]
+    end
+
+    # Adjuntar disco extra
+    vb.customize ["storageattach", :id,
+                  "--storagectl", "SATA Controller",
+                  "--port", 1, "--device", 0,
+                  "--type", "hdd",
+                  "--medium", disk_path]
+  end
+
+  # Provisión
+  config.vm.provision "shell", inline: <<-SHELL
+    # Actualizar repositorios e instalar paquetes básicos
+    apt-get update
+    apt-get install -y vim htop curl net-tools sudo
+
+    # Instalar entorno gráfico ligero
+    apt-get install -y xorg openbox lightdm
+
+    # Crear usuario developer con sudo
+    id -u developer &>/dev/null || useradd -m -s /bin/bash developer
+    echo "developer:developer" | chpasswd
+    usermod -aG sudo developer
+
+    # Configurar hostname en /etc/hosts para X
+    if ! grep -q $(hostname) /etc/hosts; then
+      echo "127.0.1.1 $(hostname)" >> /etc/hosts
+    fi
+
+    # Habilitar lightdm para que arranque automáticamente
+    systemctl enable lightdm
+  SHELL
+
+  # Configurar red (opcional, NAT con forward de SSH)
+  config.vm.network "forwarded_port", guest: 22, host: 2222
+end
